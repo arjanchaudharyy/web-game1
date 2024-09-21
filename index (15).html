@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Evolution</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 400px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        #emoji-container {
+            font-size: 8rem;
+            margin: 2rem 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+        }
+
+        #stats p {
+            font-weight: bold;
+            color: #333;
+        }
+
+        #celebration {
+            font-size: 3rem;
+            margin: 1rem 0;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: right;
+        }
+
+        #taskbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+
+        #taskbar a:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Emoji Evolution</h1>
+        <p>Click the emoji to evolve it!</p>
+        <div id="emoji-container">
+            <span id="emoji">🥚</span>
+        </div>
+        <div id="stats">
+            <p>Clicks: <span id="click-count">0</span></p>
+            <p>Evolution Stage: <span id="evolution-stage">0</span></p>
+        </div>
+    </div>
+    <div id="taskbar">
+        <a href="https://arjan.io" target="_blank" rel="noopener noreferrer">Arjan.io</a>
+    </div>
+    <script>
+        let emojiElement = document.getElementById('emoji');
+        let clickCountElement = document.getElementById('click-count');
+        let evolutionStageElement = document.getElementById('evolution-stage');
+        const container = document.querySelector('.container');
+
+        let clickCount = 0;
+        let evolutionStage = 0;
+        let currentPath = 'nature';
+
+        const emojiStages = {
+            nature: ['🥚', '🐣', '🐥', '🐤', '🐓', '🦃', '🦚', '🦜', '🦅', '🪽', '🦉', '🦤', '🐉', '🐲'],
+            tech: ['💻', '📱', '🖥️', '🤖', '🎮', '📡', '🛰️', '🚀', '🛸', '👽', '🌌', '🔭', '🌠', '🪐'],
+            food: ['🌱', '🍅', '🥗', '🍲', '🍕', '🍔', '🌭', '🍣', '🍰', '🍷', '🍾', '🥂', '👨‍🍳', '🍽️'],
+            space: ['🌍', '🌎', '🌏', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘', '🌑', '☄️', '🌠', '🌌', '👨‍🚀'],
+            fantasy: ['🧙', '🧝', '🧛', '🧜', '🧚', '🦄', '🐉', '🧞', '🧟', '🧌', '🏰', '🗡️', '🔮', '👑']
+        };
+
+        function evolveEmoji() {
+            clickCount++;
+            clickCountElement.textContent = clickCount;
+
+            if (clickCount % 10 === 0) {
+                evolutionStage = Math.min(evolutionStage + 1, emojiStages[currentPath].length - 1);
+                emojiElement.textContent = emojiStages[currentPath][evolutionStage];
+                evolutionStageElement.textContent = evolutionStage;
+
+                emojiElement.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    emojiElement.style.transform = 'scale(1)';
+                }, 200);
+
+                if (evolutionStage === emojiStages[currentPath].length - 1) {
+                    showCompletionScreen();
+                }
+            }
+        }
+
+        function showCompletionScreen() {
+            const completedPaths = Object.keys(emojiStages).filter(path => path !== currentPath);
+            const buttons = completedPaths.map(path => 
+                `<button onclick="startNewEvolution('${path}')">${path.charAt(0).toUpperCase() + path.slice(1)} Evolution</button>`
+            ).join('');
+
+            container.innerHTML = `
+                <h1>Evolution Complete!</h1>
+                <p>Congratulations! You've reached the final form of ${currentPath}!</p>
+                <div id="emoji-container">
+                    <span id="emoji">${emojiStages[currentPath][emojiStages[currentPath].length - 1]}</span>
+                </div>
+                <div id="celebration">
+                    🎉🎊🥳🎈🏆
+                </div>
+                <p>Total Clicks: ${clickCount}</p>
+                <button onclick="restartGame()">Start Over</button>
+                ${buttons}
+            `;
+        }
+
+        function restartGame() {
+            currentPath = 'nature';
+            resetGameState();
+        }
+
+        function startNewEvolution(path) {
+            currentPath = path;
+            resetGameState();
+        }
+
+        function resetGameState() {
+            clickCount = 0;
+            evolutionStage = 0;
+            container.innerHTML = `
+                <h1>Emoji Evolution</h1>
+                <p>Click the emoji to evolve it!</p>
+                <div id="emoji-container">
+                    <span id="emoji">${emojiStages[currentPath][0]}</span>
+                </div>
+                <div id="stats">
+                    <p>Clicks: <span id="click-count">0</span></p>
+                    <p>Evolution Stage: <span id="evolution-stage">0</span></p>
+                </div>
+            `;
+
+            emojiElement = document.getElementById('emoji');
+            clickCountElement = document.getElementById('click-count');
+            evolutionStageElement = document.getElementById('evolution-stage');
+
+            emojiElement.addEventListener('click', evolveEmoji);
+            addHoverEffect();
+        }
+
+        function addHoverEffect() {
+            emojiElement.addEventListener('mouseover', () => {
+                emojiElement.style.transform = 'scale(1.1)';
+            });
+
+            emojiElement.addEventListener('mouseout', () => {
+                emojiElement.style.transform = 'scale(1)';
+            });
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                evolveEmoji();
+            }
+        });
+
+        emojiElement.addEventListener('click', evolveEmoji);
+        addHoverEffect();
+    </script>
+</body>
+</html>
